@@ -207,7 +207,7 @@ return [
         'local' => [
             'test' => [
                 'connection' => 'redis',
-                'queue' => ['test-queue'],
+                'queue' => ['test_queue'],
                 'balance' => 'auto',
                 'autoScalingStrategy' => 'time',
                 'maxProcesses' => 1,

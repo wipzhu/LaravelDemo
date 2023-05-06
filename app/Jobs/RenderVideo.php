@@ -48,8 +48,10 @@ class RenderVideo implements ShouldQueue
      */
     public function handle()
     {
-//        dd($this->video);
-        info($this->video->id);
+        $id = $this->video->getAttribute('id');
+        echo $id;
+//        print_r($this->video->getAttribute('id'));
+        info($id);
     }
 
 }
