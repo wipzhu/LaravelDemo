@@ -8,8 +8,9 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
-class RenderVideo implements ShouldQueue
+class RenderVideoJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -48,10 +49,12 @@ class RenderVideo implements ShouldQueue
      */
     public function handle()
     {
-        $id = $this->video->getAttribute('id');
-        echo $id;
+        $data = $this->video->getAttributes();
+        Log::info("Video Data ==> " . json_encode($data, JSON_UNESCAPED_UNICODE));
+
+//        $id = $this->video->getAttribute('id');
 //        print_r($this->video->getAttribute('id'));
-        info($id);
+//        info($id);
     }
 
 }

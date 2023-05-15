@@ -11,22 +11,30 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 
-class RedisTestJobQueue implements ShouldQueue
+class RedisQueueTestJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, LogTrait;
 
     protected $redis_key;
-    protected $timestamp;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($redis_key, $timestamp)
+    public function __construct($redis_key)
     {
         $this->redis_key = $redis_key;
-        $this->timestamp = $timestamp;
+    }
+
+    /**
+     * 获取应该分配给任务的标记
+     *
+     * @return array
+     */
+    public function tags()
+    {
+        return ['test', $this->redis_key];
     }
 
     /**
@@ -38,7 +46,7 @@ class RedisTestJobQueue implements ShouldQueue
     {
         try {
             $r = Redis::rPop($this->redis_key);
-            output(time() . '===' . $this->timestamp . '---' . $r);
+            $this->info($r);
         } catch (\RedisException $e) {
             Log::error($e->getTraceAsString());
         }
