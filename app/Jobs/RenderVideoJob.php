@@ -49,6 +49,8 @@ class RenderVideoJob implements ShouldQueue
      */
     public function handle()
     {
+//        echo $this->video->id;
+
         $data = $this->video->getAttributes();
         Log::info("Video Data ==> " . json_encode($data, JSON_UNESCAPED_UNICODE));
 

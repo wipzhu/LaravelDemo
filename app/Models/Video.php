@@ -13,5 +13,5 @@ class Video extends Model
      */
 //    protected $table = 'videos';
 
-    public $id;
+//    public $id;
 }
