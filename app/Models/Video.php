@@ -11,7 +11,7 @@ class Video extends Model
      *
      * @var string
      */
-    protected $table = 'videos';
+//    protected $table = 'videos';
 
     public $id;
 }

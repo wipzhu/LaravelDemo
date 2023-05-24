@@ -123,13 +123,13 @@ function exportCsv($data, $title, $filename, string $savePath = '../data/exportF
     $fullName = $savePath . $filename . '.csv'; //设置文件名
 
     header("Content-Type: text/csv;charset=utf-8");
-    header( "Content-Disposition: attachment;filename=\"$fullName\"" );
+    header("Content-Disposition: attachment;filename=\"$fullName\"");
     header("Pragma: no-cache");
     header("Expires: 0");
 
-    $fp= fopen($fullName, 'w');
+    $fp = fopen($fullName, 'w');
     // 对于用 wps 和编辑器打开无乱码但是用 excel 打开出现乱码的问题,可以添加以下一行代码解决问题
-    fwrite($fp, chr(0xEF).chr(0xBB).chr(0xBF));
+    fwrite($fp, chr(0xEF) . chr(0xBB) . chr(0xBF));
     foreach ($data as $fields) {
         fputcsv($fp, $fields);
     }
