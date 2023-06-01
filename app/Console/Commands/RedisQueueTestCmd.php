@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use App\Jobs\RedisQueueTestJob;
 use Exception;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Redis;
+use Predis\Client;
 
 class RedisQueueTestCmd extends Command
 {
@@ -42,10 +42,13 @@ class RedisQueueTestCmd extends Command
     public function handle()
     {
         $redisKey = 'Test_wipzhu';
-//        $redis = MRedis::getInstance();
-//        $redis->lpush($redisKey, getRandStr(16));
-        Redis::lpush($redisKey, getRandStr(16));
+        $redis = new Client();
 
+        for ($i = 0; $i < 10; $i++) {
+            $randomStr = getRandomStr(16);
+            output("生成的随机字符串为：" . $randomStr);
+            $redis->lpush($redisKey, (array)$randomStr);
+        }
         $delaySeconds = random_int(2, 10);
         RedisQueueTestJob::dispatch($redisKey)->delay($delaySeconds)->onQueue("test_queue");
 

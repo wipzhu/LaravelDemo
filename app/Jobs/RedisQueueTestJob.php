@@ -9,13 +9,13 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Redis;
+use Predis\Client;
 
 class RedisQueueTestJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, LogTrait;
 
-    protected $redis_key;
+    protected string $redis_key;
 
     /**
      * Create a new job instance.
@@ -45,8 +45,10 @@ class RedisQueueTestJob implements ShouldQueue
     public function handle()
     {
         try {
-            $r = Redis::rPop($this->redis_key);
-            $this->info($r);
+            $redis = new Client();
+            while ($r = $redis->rpop($this->redis_key)){
+                $this->info($r);
+            }
         } catch (\RedisException $e) {
             Log::error($e->getTraceAsString());
         }

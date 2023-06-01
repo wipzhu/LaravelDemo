@@ -4,7 +4,7 @@
  * @param bool $showTime
  * @param bool $isCli
  */
-function output($msg, $showTime = true, $isCli = true)
+function output($msg, $showTime = true, $isCli = true): void
 {
     echo ($showTime ? '[' . date('Y-m-d H:i:s') . '] ' : '') . $msg . ($isCli ? PHP_EOL : '<br/>');
 }
@@ -15,7 +15,7 @@ function output($msg, $showTime = true, $isCli = true)
  * @param bool $showTime
  * @param bool $isCli
  */
-function outputWithUuid($msg, $uuid = '', $showTime = true, $isCli = true)
+function outputWithUuid($msg, string $uuid = '', bool $showTime = true, bool $isCli = true): void
 {
     $msg = empty($uuid) ? $msg : $msg . ':' . $uuid;
     output($msg, $showTime, $isCli);
@@ -26,7 +26,7 @@ function outputWithUuid($msg, $uuid = '', $showTime = true, $isCli = true)
  * @param $text
  * @return bool
  */
-function isEmail($text)
+function isEmail($text): bool
 {
     return preg_match('/^\w+([\-.]\w+)*@\w+([\-.]\w+)*$/', trim($text));
 }
@@ -36,7 +36,7 @@ function isEmail($text)
  * @param $text
  * @return bool
  */
-function isMobile($text)
+function isMobile($text): bool
 {
     return preg_match('/^1[3|4|5|6|7|8|9]\d{9}$/', trim($text));
 }
@@ -47,7 +47,7 @@ function isMobile($text)
  * @param string $type
  * @return bool|string
  */
-function replaceStar($text, $type = 'mobile')
+function replaceStar($text, string $type = 'mobile'): bool|string
 {
     if ($type == 'email' && isEmail($text)) {
         $input = explode('@', $text);
@@ -67,7 +67,7 @@ function replaceStar($text, $type = 'mobile')
  * @author wipzhu
  * @update unknown
  */
-function pr($arr)
+function pr($arr): void
 {
     if (is_array($arr) || is_object($arr)) {
         if (!empty($arr)) {
@@ -91,7 +91,7 @@ function pr($arr)
  * @author wipzhu
  * @update unknown
  */
-function getRandStr($length)
+function getRandomStr($length): string
 {
     //字符组合
     $str = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -113,9 +113,10 @@ function getRandStr($length)
  * @author wipzhu
  * @update unknown
  */
-function exportCsv($data, $title, $filename, string $savePath = '../data/exportFile/')
+function exportCsv($data, $title, $filename, string $savePath = '../data/exportFile/'): void
 {
-    if (!is_dir($savePath)) { //判断目录是否存在 不存在就创建
+    // 判断保存目录是否存在 不存在就创建
+    if (!is_dir($savePath)) {
         mkdir($savePath, 0777, true);
     }
     array_unshift($data, $title);
