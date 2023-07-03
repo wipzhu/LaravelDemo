@@ -6,12 +6,10 @@ use Exception;
 
 class TestController extends Controller
 {
-    /**
-     * @throws Exception
-     */
     public function wipzhu()
     {
-        phpinfo();
+        $mode = collect([1, 1, 2, 2, 2])->mode();
+        dd($mode);
     }
 
 }
