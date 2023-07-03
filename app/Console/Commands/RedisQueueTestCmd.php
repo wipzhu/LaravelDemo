@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use App\Jobs\RedisQueueTestJob;
 use Exception;
 use Illuminate\Console\Command;
-use Predis\Client;
+use Predis\Client AS Redis;
 
 class RedisQueueTestCmd extends Command
 {
@@ -42,7 +42,7 @@ class RedisQueueTestCmd extends Command
     public function handle()
     {
         $redisKey = 'Test_wipzhu';
-        $redis = new Client();
+        $redis = new Redis();
 
         for ($i = 0; $i < 10; $i++) {
             $randomStr = getRandomStr(16);

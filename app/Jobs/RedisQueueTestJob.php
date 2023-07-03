@@ -9,7 +9,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
-use Predis\Client;
+use Predis\Client AS Redis;
 
 class RedisQueueTestJob implements ShouldQueue
 {
@@ -45,7 +45,7 @@ class RedisQueueTestJob implements ShouldQueue
     public function handle()
     {
         try {
-            $redis = new Client();
+            $redis = new Redis();
             while ($r = $redis->rpop($this->redis_key)){
                 $this->info($r);
             }
