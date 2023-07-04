@@ -4,27 +4,26 @@ namespace App\Jobs;
 
 use App\Traits\LogTrait;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
-use Predis\Client AS Redis;
 
-class RedisQueueTestJob implements ShouldQueue
+class AmqpTestJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, LogTrait;
 
-    protected string $redis_key;
+    protected array $msg;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($redis_key)
+    public function __construct($msg)
     {
-        $this->redis_key = $redis_key;
+        $this->msg = $msg;
     }
 
     /**
@@ -34,7 +33,7 @@ class RedisQueueTestJob implements ShouldQueue
      */
     public function tags()
     {
-        return ['test', 'redis-queue-test'];
+        return ['test', 'amqp-queue-test'];
     }
 
     /**
@@ -44,13 +43,6 @@ class RedisQueueTestJob implements ShouldQueue
      */
     public function handle()
     {
-        try {
-            $redis = new Redis();
-            while ($r = $redis->rpop($this->redis_key)){
-                $this->info($r);
-            }
-        } catch (\RedisException $e) {
-            Log::error($e->getTraceAsString());
-        }
+        $this->info("Amqp Info => " . json_encode($this->msg, JSON_UNESCAPED_UNICODE));
     }
 }

@@ -14,7 +14,9 @@
         "laravel/horizon": "^5.15",
         "laravel/sanctum": "^2.11",
         "laravel/tinker": "^2.5",
-        "predis/predis": "^2.1"
+        "predis/predis": "^2.1",
+        "enqueue/amqp-lib": "^0.10.18",
+        "vladimir-yuldashev/laravel-queue-rabbitmq": "^11.3"
     },
     "require-dev": {
         "facade/ignition": "^2.5",

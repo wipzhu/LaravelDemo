@@ -11,6 +11,6 @@ Trait LogTrait
     public function info($msg, $writeType = FILE_APPEND)
     {
         $this->logPath = storage_path('logs/default.log');
-        file_put_contents($this->logPath, Carbon::now()->toDateTimeString() . " " . $msg . "\n", $writeType);
+        file_put_contents($this->logPath, "[" . Carbon::now()->toDateTimeString() . "] " . $msg . "\n", $writeType);
     }
 }

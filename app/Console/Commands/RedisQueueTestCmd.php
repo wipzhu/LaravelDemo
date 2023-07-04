@@ -50,7 +50,7 @@ class RedisQueueTestCmd extends Command
             $redis->lpush($redisKey, (array)$randomStr);
         }
         $delaySeconds = random_int(2, 10);
-        RedisQueueTestJob::dispatch($redisKey)->delay($delaySeconds)->onQueue("test_queue");
+        RedisQueueTestJob::dispatch($redisKey)->delay($delaySeconds)->onQueue("redisQueue");
 
         return true;
     }
