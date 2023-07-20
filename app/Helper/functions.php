@@ -105,6 +105,20 @@ function getRandomStr($length): string
 }
 
 /**
+ * @desc: 获取毫秒级时间戳
+ * @user: wipzhu
+ * @datetime: 2023/7/20 17:35
+ * @return string
+ */
+function get_millisecond(): string
+{
+    // 获取微秒数时间戳
+    $tempTime = explode(' ', microtime());
+    // 转换成毫秒数时间戳
+    return (float)sprintf('%.0f', (floatval($tempTime[0]) + floatval($tempTime[1])) * 1000);
+}
+
+/**
  * @desc 导出到csv文件
  * @param $data
  * @param $title
@@ -135,4 +149,166 @@ function exportCsv($data, $title, $filename, string $savePath = '../data/exportF
         fputcsv($fp, $fields);
     }
     fclose($fp);
+}
+
+/**
+ * AES-CBC 128位加密方案
+ * @param $text
+ * @param bool $isEncrypt 是否是加密
+ * @param bool $key
+ * @param bool $iv
+ * @param bool $delEqual 是否删除base64之后的==
+ * @return string
+ */
+function AES_128($text, $isEncrypt = true, $key = false, $iv = false, $delEqual = true, $hex = false)
+{
+    if (empty($text)) {
+        return $text;
+    }
+    $privateKey = $key ?: config("common.aes_key");
+    $iv = $iv ?: $privateKey;
+    if ($isEncrypt) {//加密
+        $encrypted = openssl_encrypt($text, 'AES-128-CBC', $privateKey, OPENSSL_RAW_DATA, $iv);
+        $encrypted = $hex ? bin2hex($encrypted) : base64_encode($encrypted);
+        return $delEqual ? str_replace('==', '', $encrypted) : $encrypted;
+    } else { //解密
+        $encryptedData = $hex ? hex2bin($text) : base64_decode($text);
+        $decrypted = openssl_decrypt($encryptedData, 'AES-128-CBC', $privateKey, OPENSSL_RAW_DATA, $iv);
+        return trim($decrypted);
+    }
+}
+
+/**
+ * AES-CBC 256位加密方案
+ * @param $text
+ * @param bool $isEncrypt 是否是加密
+ * @param bool $key
+ * @param bool $iv
+ * @param bool $delEqual 是否删除base64之后的==
+ * @return string
+ */
+function AES_256($text, $isEncrypt = true, $key = false, $iv = false, $delEqual = true, $hex = false)
+{
+    $privateKey = $key ?: config("common.aes_key_256");
+    $iv = $iv ?: md5($privateKey, true);
+    if ($isEncrypt) {//加密
+        $encrypted = openssl_encrypt($text, 'AES-256-CBC', $privateKey, OPENSSL_RAW_DATA, $iv);
+        $encrypted = $hex ? bin2hex($encrypted) : base64_encode($encrypted);
+        return $delEqual ? str_replace('==', '', $encrypted) : $encrypted;
+    } else { //解密
+        $encryptedData = $hex ? hex2bin($text) : base64_decode($text);
+        $decrypted = openssl_decrypt($encryptedData, 'AES-256-CBC', $privateKey, OPENSSL_RAW_DATA, $iv);
+        return trim($decrypted);
+    }
+}
+
+
+/**
+ * curl get url data
+ */
+function curlGet($url, $timeout = 20)
+{
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_USERAGENT, 'INTERNAL API CHANNEL');
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 20);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // 信任任何证书
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2); // 检查证书中是否设置域名（为0也可以，就是连域名存在与否都不验证了）
+
+    $file_contents = curl_exec($ch);
+    curl_close($ch);
+    return urldecode($file_contents);
+}
+
+/**
+ * curlPost
+ * @param string $url
+ * @param array $data
+ * @param int $timeout
+ * @param int $maxtimeout
+ * @param bool $needDecode
+ * @return string
+ */
+function curlPost($url, $data, $timeout = 5, $maxtimeout = 30, $needDecode = TRUE)
+{
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_USERAGENT, 'INTERNAL API CHANNEL');
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    // post数据
+    curl_setopt($ch, CURLOPT_POST, 1);
+    // post的变量
+    $post_data = http_build_query($data);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // 信任任何证书
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);// 检查证书中是否设置域名（为0也可以，就是连域名存在与否都不验证了）
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
+    curl_setopt($ch, CURLOPT_TIMEOUT, $maxtimeout);
+    $output = curl_exec($ch);
+    curl_close($ch);
+    //打印获得的数据
+    return $needDecode ? urldecode($output) : $output;
+}
+
+/**
+ * Json参数的Post请求
+ * @param $url
+ * @param $data
+ * @param int $timeout
+ * @param int $maxtimeout
+ * @return mixed
+ */
+function curlPostJson($url, $data, $timeout = 5, $maxtimeout = 30)
+{
+    $dataStr = json_encode($data, JSON_UNESCAPED_UNICODE);
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_USERAGENT, 'INTERNAL API CHANNEL');
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    // post数据
+    curl_setopt($ch, CURLOPT_POST, 1);
+    // post的变量
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $dataStr);
+//    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // 信任任何证书
+//    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);// 检查证书中是否设置域名（为0也可以，就是连域名存在与否都不验证了）
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
+    curl_setopt($ch, CURLOPT_TIMEOUT, $maxtimeout);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+        'Content-Type: application/json;charset=utf-8',
+        'Content-Length: ' . strlen($dataStr)
+    ));
+    $output = curl_exec($ch);
+    curl_close($ch);
+    return json_decode($output, true);
+}
+
+/**
+ * 拼接http 请求串
+ * @tutorial 模仿 php 的http_build_query($query_data)方法,
+ *           但只能处理简单的键名值数组,没有办法处理对象;
+ *           做这函数的原因是一个接口中使用http_build_query拼出的结果与接口不一致
+ * @param array $query_data 要拼接参数的键名->值数组
+ * @param bool $encoding 是否 urlencode 编码(如果是微信,有时不进行编码会无法显示)
+ * @return string 拼接完成的字符串(不含 domain?)
+ */
+function build_query(array $query_data, bool $encoding = false): string
+{
+    $res = '';
+    $count = count($query_data);
+    $i = 0;
+    foreach ($query_data as $k => $v) {
+        if ($encoding === true) {
+            $v = urlencode($v);
+        }
+        if ($i < $count - 1) {
+            $res .= $k . '=' . $v . '&';
+        } else {
+            $res .= $k . '=' . $v;
+        }
+        $i++;
+    }
+    return $res;
 }
