@@ -226,12 +226,13 @@ function curlGet($url, $timeout = 20)
  * curlPost
  * @param string $url
  * @param array $data
+ * @param array $header
  * @param int $timeout
  * @param int $maxtimeout
  * @param bool $needDecode
  * @return string
  */
-function curlPost($url, $data, $timeout = 5, $maxtimeout = 30, $needDecode = TRUE)
+function curlPost($url, $data, $header = [], $timeout = 5, $maxtimeout = 30, $needDecode = TRUE)
 {
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_USERAGENT, 'INTERNAL API CHANNEL');
@@ -246,6 +247,9 @@ function curlPost($url, $data, $timeout = 5, $maxtimeout = 30, $needDecode = TRU
     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);// 检查证书中是否设置域名（为0也可以，就是连域名存在与否都不验证了）
     curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
     curl_setopt($ch, CURLOPT_TIMEOUT, $maxtimeout);
+    if ($header) {
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+    }
     $output = curl_exec($ch);
     curl_close($ch);
     //打印获得的数据
