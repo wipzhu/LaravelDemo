@@ -38,8 +38,8 @@ class RouteServiceProvider extends ServiceProvider
         $this->configureRateLimiting();
 
         $this->routes(function () {
-            Route::prefix('api')
-                ->middleware('api')
+            Route::middleware('api')
+                //->prefix('api')
                 ->namespace($this->namespace)
                 ->group(base_path('routes/api.php'));
 
@@ -56,6 +56,11 @@ class RouteServiceProvider extends ServiceProvider
      */
     protected function configureRateLimiting()
     {
+        RateLimiter::for('uploads', function () {
+            return Limit::perMinute(10)->response(function () {
+                return response('Attempts too many, please try again later...', 429);
+            });
+        });
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(60)->by(optional($request->user())->id ?: $request->ip());
         });

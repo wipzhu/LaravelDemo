@@ -15,9 +15,15 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
 
-Route::get('/', [IndexController::class, 'index']);
-Route::get('/test/wipzhu', [TestController::class, 'wipzhu']);
+$wwwDomain = env('APP_DOMAIN_WWW');
+
+Route::domain($wwwDomain)->group(function () {
+    Route::get('/', function () {
+        return view('welcome');
+    });
+
+    Route::get('/', [IndexController::class, 'index']);
+    Route::get('/test/wipzhu', [TestController::class, 'wipzhu']);
+
+});
