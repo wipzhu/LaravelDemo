@@ -40,6 +40,23 @@ class WipzhuTestCmd extends Command
      */
     public function handle()
     {
+        $headers = ['日期', '订单数', '备注'];
+
+        $orders = [
+            ['2019-05-20', '75'],
+            ['2019-05-21', '80'],
+            ['2019-05-22', '89'],
+            ['2019-05-23', '91'],
+            ['2019-05-24', '139', '促销']
+        ];
+        $style = $this->choice(
+            '请选择表格样式：',
+            ['default', 'borderless', 'compact', 'symfony-style-guide', 'box', 'box-double'],
+            0
+        );
+
+        $this->table($headers, $orders, $style);
+        die();
         $name = $this->ask('Your username is?');
         $this->info('Your name is：' . $name);
 
